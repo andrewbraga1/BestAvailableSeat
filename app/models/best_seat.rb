@@ -56,6 +56,7 @@ BestSeat::EXCEPTION_PRIORITY = -1
         limit = number.to_i
         result = []
         available_seats_sorted = available_seats.sort
+        
         available_seats_sorted.each do |seat|
             # check if the best seats group contains such elements
                 if best_seats_reference.has_value?(seat)
@@ -96,30 +97,38 @@ BestSeat::EXCEPTION_PRIORITY = -1
                 end 
             
         end
+       
         
         # this section check with another seats is closer than reference seats position, which are by corridor
         closer_to_ref=''
+        aux = []
         best_seats_reference_parameter = best_seats_reference[1][1,best_seats_reference[1].size].to_i
         closer_to_ref_integer = best_seats_reference_parameter
         best_seats_reference.each do |key, value|
             available_seats.each do |seat|
                 if best_seats_reference[key].include?(seat[0])
-                    if (closer_to_ref_integer > (best_seats_reference_parameter - seat[1,seat.size].to_i).abs())
+                    if (closer_to_ref_integer > (best_seats_reference_parameter - seat[1,seat.size].to_i).abs()) 
                         
+                        aux.push(seat)
                         closer_to_ref = seat
                         closer_to_ref_integer = (best_seats_reference_parameter - seat[1,seat.size].to_i).abs()
-                        unless result.include?(seat)
-                            if result.size < limit
-                                result.push(seat)
-                                
-                            end
-                        end
+                        
+                        
                     end
                     
                 end 
             end
         end
-
+        while result.size < limit do
+            unless result.include?(aux.last) && aux.size > 0
+                if result.size < limit
+                    result.push(aux.last)
+                    aux.pop()
+                    
+                end
+            end
+        end
+        
         return result.sort
     
     end
